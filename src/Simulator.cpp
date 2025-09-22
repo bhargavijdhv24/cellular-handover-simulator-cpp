@@ -7,20 +7,36 @@
 #include "HandoverManager.h"
 
 int main() {
-    // Setup base stations
-    std::vector<BaseStation> stations = {
-        BaseStation(0,0), BaseStation(50,0), BaseStation(100,0)
-    };
+    int numStations, pathEnd, step;
+    std::cout << "Enter number of base stations: ";
+    std::cin >> numStations;
 
-    // Define path of the mobile device (moving along x-axis)
+    std::vector<BaseStation> stations;
+    for (int i = 0; i < numStations; i++) {
+        double x, y;
+        std::cout << "Enter position of Base Station " << i << " (x y): ";
+        std::cin >> x >> y;
+        stations.emplace_back(x, y);
+    }
+
+    std::cout << "Enter path end position (x): ";
+    std::cin >> pathEnd;
+    std::cout << "Enter step size: ";
+    std::cin >> step;
+
+    // Define path
     std::vector<std::pair<double,double>> path;
-    for (int x = 0; x <= 120; x += 5) {
+    for (int x = 0; x <= pathEnd; x += step) {
         path.push_back({x,0});
     }
     MobileDevice device(path);
     HandoverManager manager;
 
     std::ofstream logFile("data/handover_log.txt");
+    if (!logFile.is_open()) {
+        std::cerr << "Error: could not open log file!" << std::endl;
+        return 1;
+    }
 
     // Run simulation
     while (device.hasNext()) {
@@ -40,5 +56,7 @@ int main() {
     }
 
     logFile.close();
+    std::cout << "\nSimulation finished! Results saved to data/handover_log.txt\n";
+    std::cout << "Run plot_results.py to see the graph.\n";
     return 0;
 }
